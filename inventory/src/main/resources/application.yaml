@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: inventory
+
+server:
+  port: 8092

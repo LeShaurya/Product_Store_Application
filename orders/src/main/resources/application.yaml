@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: orders
+server:
+  port: 8091
