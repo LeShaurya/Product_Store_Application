@@ -1,5 +1,27 @@
 spring:
   application:
     name: products
+  data:
+    mongodb:
+      host: mongodb
+      port: 27017
+      database: products
+      repositories:
+        enabled: true
 server:
   port: 8090
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
