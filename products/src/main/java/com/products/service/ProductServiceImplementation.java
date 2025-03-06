@@ -1,6 +1,7 @@
 package com.products.service;
 
 import com.products.dto.ProductDto;
+import com.products.exceptions.ProductNotFoundException;
 import com.products.model.Product;
 import com.products.repository.ProductRepository;
 import com.products.utils.ProductTypeConversion;
@@ -13,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductServiceImplementation implements ProductService{
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     @Override
     public List<ProductDto> getAllProducts() {
@@ -22,7 +23,7 @@ public class ProductServiceImplementation implements ProductService{
 
     @Override
     public ProductDto getBySkuName(String skuName) {
-        Product productBySkuCode = productRepository.findBySkuCode(skuName).orElseThrow();
+        Product productBySkuCode = productRepository.findBySkuCode(skuName).orElseThrow(() ->new ProductNotFoundException("Product not found"));
         return ProductTypeConversion.convertToDto(productBySkuCode);
     }
 
@@ -37,7 +38,7 @@ public class ProductServiceImplementation implements ProductService{
 
     @Override
     public ProductDto updateProduct(String skuCode, ProductDto productDto) {
-        Product existingProduct = productRepository.findBySkuCode(skuCode).orElseThrow();
+        Product existingProduct = productRepository.findBySkuCode(skuCode).orElseThrow(()->new ProductNotFoundException("Product not found"));
         existingProduct.setProductName(productDto.getProductName());
         existingProduct.setCategory(productDto.getCategory());
         existingProduct.setPrice(productDto.getPrice());
@@ -49,7 +50,7 @@ public class ProductServiceImplementation implements ProductService{
 
     @Override
     public void deleteProduct(String skuCode) {
-        Product product = productRepository.findBySkuCode(skuCode).orElseThrow();
+        Product product = productRepository.findBySkuCode(skuCode).orElseThrow(()->new ProductNotFoundException("Product not found"));
         productRepository.delete(product);
     }
 
