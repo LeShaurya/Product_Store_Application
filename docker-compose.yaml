@@ -1,54 +1,100 @@
+#version: '3.8'
+#services:
+#
+#  product-database:
+#    image: mongo:latest
+#    container_name: product-database
+#    ports:
+#      - "27018:27017"
+#    volumes:
+#      - './mongo/data:/data/db'
+#    environment:
+#      - MONGO_INITDB_DATABASE=products
+#    healthcheck:
+#      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
+#      start_interval: 5s
+#
+#  inventory-database:
+#    image: mysql:latest
+#    container_name: inventory-database
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: inventory
+#      MYSQL_PASSWORD: root
+#    ports:
+#      - "3316:3306"
+#    volumes:
+#      - './mysql/data:/var/lib/mysql'
+#    healthcheck:
+#      test: ["CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD' ]
+#      timeout: 20s
+#      retries: 10
+#      start_interval: 5s
+#  order-database:
+#    image: mysql:latest
+#    container_name: order-database
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: orders
+#      MYSQL_PASSWORD: root
+#    ports:
+#      - "3326:3306"
+#    volumes:
+#      - './mysql/data:/var/lib/mysql'
+#    healthcheck:
+#      test: [ "CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD' ]
+#      timeout: 20s
+#      retries: 10
+#      start_interval: 5s
+
 version: '3.8'
+
 services:
-  product-database:
-    image: mongo:latest
-    container_name: product-database
-    ports:
-      - "27017:27017"
-    volumes:
-      - './mongo/data:/data/db'
-    healthcheck:
-      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_interval: 5s
-
-  inventory-database:
-    image: mysql:latest
-    container_name: inventory-database
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: inventory
-      MYSQL_PASSWORD: root
+      ZOOKEEPER_CLIENT_PORT: 2181
     ports:
-      - "3316:3306"
-    volumes:
-      - './mysql/data:/var/lib/mysql'
-    healthcheck:
-      test: ["CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD' ]
-      timeout: 20s
-      retries: 10
-      start_interval: 5s
+      - "2181:2181"
 
-  products:
-    build:
-      context: ./products/
-    ports:
-      - "8090:8090"
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
     depends_on:
-      product-database:
-        condition: service_healthy
-
-  inventory:
-    build:
-      context: ./inventory
-    ports:
-      - "8092:8092"
-    depends_on:
-      inventory-database:
-        condition: service_healthy
+      - zookeeper
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://inventory-database:3306/inventory
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "9092:9092"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:29092
+    ports:
+      - "8080:8080"
+
+  kafka-setup:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - kafka
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Waiting for Kafka to be ready...";
+        sleep 5;
+        kafka-topics --create --topic order-created --bootstrap-server kafka:29092 --partitions 1 --replication-factor 1;
+        echo "Topics created successfully!";

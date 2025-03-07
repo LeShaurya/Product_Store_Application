@@ -20,6 +20,7 @@ public class InventoryServiceImplementation implements InventoryService {
         boolean productInventoryExists = inventoryRepository.existsBySkuCodeAndAvailableQuantity(inventoryUpdateDto.getSkuCode(), inventoryUpdateDto.getQuantity());
         if(productInventoryExists) {
             Inventory productInventory = inventoryRepository.findBySkuCode(inventoryUpdateDto.getSkuCode());
+            inventoryUpdateDto.setQuantity(productInventory.getQuantity() - inventoryUpdateDto.getQuantity());
             return updateProductInventory(inventoryUpdateDto);
         }
         throw new InsufficientInventoryException("product inventory not sufficient");

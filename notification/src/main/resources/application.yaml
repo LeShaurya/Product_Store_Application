@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: notification
+  kafka:
+    consumer:
+      group-id: group-id
+      bootstrap-servers:
+        - localhost:9092
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+server:
+  port: 8094
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+twilio:
+  account:
+    sid:
+  auth:
+    token:
+  phone:
+    number:
