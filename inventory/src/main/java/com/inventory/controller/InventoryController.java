@@ -19,6 +19,7 @@ public class InventoryController {
         return inventoryUpdateDto;
     }
 
+
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)
     public InventoryUpdateDto updateInventory(@RequestBody InventoryUpdateDto inventoryUpdateDto) {

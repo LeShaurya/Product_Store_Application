@@ -17,14 +17,21 @@ public class InventoryServiceImplementation implements InventoryService {
 
     @Override
     public boolean reserve(InventoryUpdateDto inventoryUpdateDto) {
-        boolean productInventoryExists = inventoryRepository.existsBySkuCodeAndAvailableQuantity(inventoryUpdateDto.getSkuCode(), inventoryUpdateDto.getQuantity());
-        if(productInventoryExists) {
+        boolean productInventoryExists = inventoryRepository.existsBySkuCodeAndAvailableQuantity(
+                inventoryUpdateDto.getSkuCode(),
+                inventoryUpdateDto.getQuantity()
+        );
+        if (productInventoryExists) {
             Inventory productInventory = inventoryRepository.findBySkuCode(inventoryUpdateDto.getSkuCode());
-            inventoryUpdateDto.setQuantity(productInventory.getQuantity() - inventoryUpdateDto.getQuantity());
-            return updateProductInventory(inventoryUpdateDto);
+            productInventory.setQuantity(productInventory.getQuantity() - inventoryUpdateDto.getQuantity());
+            inventoryRepository.save(productInventory);
+
+            inventoryUpdateDto.setQuantity(productInventory.getQuantity());
+            return true;
         }
-        throw new InsufficientInventoryException("product inventory not sufficient");
+        throw new InsufficientInventoryException("Product inventory not sufficient");
     }
+
 
     @Override
     public boolean updateProductInventory(InventoryUpdateDto inventoryUpdateDto) {

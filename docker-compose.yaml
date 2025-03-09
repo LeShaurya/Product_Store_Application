@@ -1,65 +1,145 @@
-#version: '3.8'
-#services:
-#
-#  product-database:
-#    image: mongo:latest
-#    container_name: product-database
-#    ports:
-#      - "27018:27017"
-#    volumes:
-#      - './mongo/data:/data/db'
-#    environment:
-#      - MONGO_INITDB_DATABASE=products
-#    healthcheck:
-#      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 5
-#      start_interval: 5s
-#
-#  inventory-database:
-#    image: mysql:latest
-#    container_name: inventory-database
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root
-#      MYSQL_DATABASE: inventory
-#      MYSQL_PASSWORD: root
-#    ports:
-#      - "3316:3306"
-#    volumes:
-#      - './mysql/data:/var/lib/mysql'
-#    healthcheck:
-#      test: ["CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD' ]
-#      timeout: 20s
-#      retries: 10
-#      start_interval: 5s
-#  order-database:
-#    image: mysql:latest
-#    container_name: order-database
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root
-#      MYSQL_DATABASE: orders
-#      MYSQL_PASSWORD: root
-#    ports:
-#      - "3326:3306"
-#    volumes:
-#      - './mysql/data:/var/lib/mysql'
-#    healthcheck:
-#      test: [ "CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD' ]
-#      timeout: 20s
-#      retries: 10
-#      start_interval: 5s
-
 version: '3.8'
-
 services:
+  product-database:
+    image: mongo:latest
+    container_name: product-database
+    ports:
+      - "27017:27017"
+    volumes:
+      - './mongo/data:/data/db'
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_interval: 5s
+    networks:
+      - product-net
+      - common-net
+
+  inventory-database:
+    image: mysql:latest
+    container_name: inventory-database
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: inventory
+      MYSQL_PASSWORD: root
+    ports:
+      - "3316:3306"
+    volumes:
+      - './mysql/inventory/data:/var/lib/mysql'
+    healthcheck:
+      test: ["CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD' ]
+      timeout: 20s
+      retries: 10
+      start_interval: 5s
+    networks:
+      - inventory-net
+      - common-net
+
+  order-database:
+    image: mysql:latest
+    container_name: order-database
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: orders
+      MYSQL_PASSWORD: root
+    ports:
+      - "3326:3306"
+    volumes:
+      - './mysql/orders/data:/var/lib/mysql'
+    healthcheck:
+      test: [ "CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD' ]
+      timeout: 20s
+      retries: 10
+      start_interval: 5s
+    networks:
+      - order-net
+      - common-net
+
+  products:
+    build:
+      context: ./products/
+    # Removed external port mapping
+    expose:
+      - "8090"
+    depends_on:
+      product-database:
+        condition: service_healthy
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://product-database:27017/products
+    networks:
+      - product-net
+      - common-net
+
+  inventory:
+    build:
+      context: ./inventory/
+    # Removed external port mapping
+    expose:
+      - "8092"
+    depends_on:
+      inventory-database:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://inventory-database:3306/inventory
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - inventory-net
+      - common-net
+
+  orders:
+    build:
+      context: ./orders/
+    # Removed external port mapping
+    expose:
+      - "8091"
+    depends_on:
+      order-database:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://order-database:3306/orders
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - order-net
+      - kafka-net
+      - common-net
+
+  notification:
+    build:
+      context: ./notification/
+    depends_on:
+      - orders
+    networks:
+      - kafka-net
+    environment:
+      TWILIO_ACCOUNT_SID:
+      TWILIO_AUTH_TOKEN:
+      TWILIO_PHONE_NUMBER:
+  gateway:
+    build:
+      context: ./gateway/
+    ports:
+      - "8093:8093"
+    networks:
+      - common-net
+    depends_on:
+      - products
+      - orders
+      - inventory
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+      KAFKA_OPTS: -Djute.maxbuffer=500000000
     ports:
       - "2181:2181"
+    networks:
+      - kafka-net
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -75,6 +155,8 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
       - "9092:9092"
+    networks:
+      - kafka-net
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -86,15 +168,31 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:29092
     ports:
       - "8080:8080"
+    networks:
+      - kafka-net
 
   kafka-setup:
     image: confluentinc/cp-kafka:latest
     depends_on:
       - kafka
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: [ "/bin/sh", "-c" ]
     command:
       - |
         echo "Waiting for Kafka to be ready...";
         sleep 5;
         kafka-topics --create --topic order-created --bootstrap-server kafka:29092 --partitions 1 --replication-factor 1;
         echo "Topics created successfully!";
+    networks:
+      - kafka-net
+
+networks:
+  product-net:
+    driver: bridge
+  inventory-net:
+    driver: bridge
+  order-net:
+    driver: bridge
+  kafka-net:
+    driver: bridge
+  common-net:
+    driver: bridge

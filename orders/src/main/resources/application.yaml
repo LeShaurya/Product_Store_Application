@@ -4,13 +4,13 @@ spring:
   kafka:
     producer:
       bootstrap-servers:
-        - localhost:9092
+        - kafka:29092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   datasource:
-    url: jdbc:mysql://localhost:3306/orders
-    username: root
-    password: root
+    url: jdbc:mysql://order-database:3306/orders
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   flyway:
     enabled: true

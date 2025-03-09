@@ -3,11 +3,9 @@ spring:
     name: products
   data:
     mongodb:
-      host: localhost
+      host: product-database
       port: 27017
       database: products
-      repositories:
-        enabled: true
 server:
   port: 8090
 

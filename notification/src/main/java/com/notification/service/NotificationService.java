@@ -4,24 +4,21 @@ import com.common.OrderDto;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.time.LocalDateTime;
 
-@Log4j2
 @Service
 public class NotificationService {
     @Value("${twilio.account.sid}")
-    private static String accountSid;
+    private String accountSid;
 
     @Value("${twilio.auth.token}")
-    private static String authToken;
+    private String authToken;
 
     @Value("${twilio.phone.number}")
-    private static String twilioPhoneNumber;
+    private String twilioPhoneNumber;
 
     @PostConstruct
     public void init() {    Twilio.init(accountSid, authToken);}
@@ -43,6 +40,5 @@ public class NotificationService {
                 new com.twilio.type.PhoneNumber(twilioPhoneNumber),
                 messageBody
         ).create();
-        log.info("Processing: {} at time: {}", order, LocalDateTime.now());
     }
 }
