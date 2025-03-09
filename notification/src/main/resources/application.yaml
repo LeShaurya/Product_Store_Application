@@ -17,6 +17,8 @@ server:
 
 management:
   endpoint:
+    prometheus:
+      enabled: true
     health:
       probes:
         enabled: true

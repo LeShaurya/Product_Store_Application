@@ -1,6 +1,14 @@
+# Build stage
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
+
+# Run stage
 FROM openjdk:21
-EXPOSE 8091
-ADD target/*.jar order.jar
-ENTRYPOINT ["java", "-jar", "order.jar"]
+WORKDIR /app
+EXPOSE 8092
+COPY --from=build /app/target/*.jar orders.jar
+ENTRYPOINT ["java", "-jar", "orders.jar"]
 
 LABEL authors="shauryadeepsinh.raolji"

@@ -60,7 +60,6 @@ services:
   products:
     build:
       context: ./products/
-    # Removed external port mapping
     expose:
       - "8090"
     depends_on:
@@ -75,7 +74,6 @@ services:
   inventory:
     build:
       context: ./inventory/
-    # Removed external port mapping
     expose:
       - "8092"
     depends_on:
@@ -92,7 +90,6 @@ services:
   orders:
     build:
       context: ./orders/
-    # Removed external port mapping
     expose:
       - "8091"
     depends_on:
@@ -110,14 +107,18 @@ services:
   notification:
     build:
       context: ./notification/
+    ports:
+      - "8094"
     depends_on:
       - orders
     networks:
+      - common-net
       - kafka-net
     environment:
       TWILIO_ACCOUNT_SID:
       TWILIO_AUTH_TOKEN:
       TWILIO_PHONE_NUMBER:
+
   gateway:
     build:
       context: ./gateway/
@@ -184,6 +185,57 @@ services:
         echo "Topics created successfully!";
     networks:
       - kafka-net
+
+
+  loki:
+    image: grafana/loki:main
+    container_name: loki
+    command: [ "-config.file=/etc/loki/local-config.yaml" ]
+    ports:
+      - "3100:3100"
+    networks:
+      - common-net
+
+  prometheus:
+    image: prom/prometheus:v2.46.0
+    container_name: prometheus
+    command:
+      - --enable-feature=exemplar-storage
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    networks:
+      - common-net
+
+#  tempo:
+#    image: grafana/tempo:2.2.2
+#    container_name: tempo
+#    command: [ "-config.file=/etc/tempo.yaml" ]
+#    volumes:
+#      - ./docker/tempo/tempo.yml:/etc/tempo.yaml:ro
+#      - ./data/tempo:/tmp/tempo
+#    ports:
+#      - "3110:3100"
+#      - "9411:9411"
+#    networks:
+#      - common-net
+
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: grafana
+    volumes:
+      - ./docker/grafana:/etc/grafana/provisioning/datasources:ro
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    ports:
+      - "3000:3000"
+    networks:
+      - common-net
 
 networks:
   product-net:
