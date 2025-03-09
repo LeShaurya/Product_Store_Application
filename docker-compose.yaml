@@ -209,19 +209,6 @@ services:
     networks:
       - common-net
 
-#  tempo:
-#    image: grafana/tempo:2.2.2
-#    container_name: tempo
-#    command: [ "-config.file=/etc/tempo.yaml" ]
-#    volumes:
-#      - ./docker/tempo/tempo.yml:/etc/tempo.yaml:ro
-#      - ./data/tempo:/tmp/tempo
-#    ports:
-#      - "3110:3100"
-#      - "9411:9411"
-#    networks:
-#      - common-net
-
   grafana:
     image: grafana/grafana:10.1.0
     container_name: grafana
