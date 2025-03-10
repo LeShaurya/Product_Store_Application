@@ -15,7 +15,6 @@ services:
       start_interval: 5s
     networks:
       - product-net
-      - common-net
 
   inventory-database:
     image: mysql:latest
@@ -35,7 +34,6 @@ services:
       start_interval: 5s
     networks:
       - inventory-net
-      - common-net
 
   order-database:
     image: mysql:latest
@@ -55,7 +53,6 @@ services:
       start_interval: 5s
     networks:
       - order-net
-      - common-net
 
   products:
     build:
@@ -168,7 +165,7 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:29092
     ports:
-      - "8080:8080"
+      - "8081:8082"
     networks:
       - kafka-net
 
@@ -185,6 +182,84 @@ services:
         echo "Topics created successfully!";
     networks:
       - kafka-net
+
+  keycloak-mysql:
+    container_name: keycloak-mysql
+    image: mysql:8
+    volumes:
+      - ./volume-data/mysql_keycloak_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: password
+    healthcheck:
+      test: [ "CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD' ]
+      timeout: 20s
+      retries: 10
+      start_interval: 5s
+    networks:
+      - common-net
+
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:24.0.1
+    command: [ "start-dev", "--import-realm" ]
+    environment:
+      DB_VENDOR: MYSQL
+      DB_ADDR: mysql
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./docker/keycloak/realms/:/opt/keycloak/data/import/
+    depends_on:
+      - keycloak-mysql
+    networks:
+      - common-net
+
+  loki:
+    image: grafana/loki:main
+    container_name: loki
+    command: [ "-config.file=/etc/loki/local-config.yaml" ]
+    ports:
+      - "3100:3100"
+    networks:
+      - common-net
+
+  prometheus:
+    image: prom/prometheus:v2.46.0
+    container_name: prometheus
+    command:
+      - --enable-feature=exemplar-storage
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    networks:
+      - common-net
+
+
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: grafana
+    volumes:
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    ports:
+      - "3000:3000"
+    networks:
+      - common-net
 
 networks:
   product-net:
