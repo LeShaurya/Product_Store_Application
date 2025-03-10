@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/inventory")
 @AllArgsConstructor
+@CrossOrigin("*")
 public class InventoryController {
     private InventoryService inventoryService;
 

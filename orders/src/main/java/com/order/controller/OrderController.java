@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/orders")
 @AllArgsConstructor
+@CrossOrigin("*")
 public class OrderController {
 
     private final OrderServiceImplementation orderService;

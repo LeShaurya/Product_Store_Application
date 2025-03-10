@@ -15,7 +15,6 @@ services:
       start_interval: 5s
     networks:
       - product-net
-      - common-net
 
   inventory-database:
     image: mysql:latest
@@ -35,7 +34,6 @@ services:
       start_interval: 5s
     networks:
       - inventory-net
-      - common-net
 
   order-database:
     image: mysql:latest
@@ -55,7 +53,6 @@ services:
       start_interval: 5s
     networks:
       - order-net
-      - common-net
 
   products:
     build:
@@ -159,18 +156,18 @@ services:
     networks:
       - kafka-net
 
-#  kafka-ui:
-#    image: provectuslabs/kafka-ui:latest
-#    container_name: kafka-ui
-#    depends_on:
-#      - kafka
-#    environment:
-#      KAFKA_CLUSTERS_0_NAME: local
-#      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:29092
-#    ports:
-#      - "8081:8080"
-#    networks:
-#      - kafka-net
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:29092
+    ports:
+      - "8081:8082"
+    networks:
+      - kafka-net
 
   kafka-setup:
     image: confluentinc/cp-kafka:latest
@@ -223,11 +220,6 @@ services:
       - ./docker/keycloak/realms/:/opt/keycloak/data/import/
     depends_on:
       - keycloak-mysql
-    healthcheck:
-      test: [ "CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD' ]
-      timeout: 20s
-      retries: 10
-      start_interval: 5s
     networks:
       - common-net
 
@@ -258,7 +250,7 @@ services:
     image: grafana/grafana:10.1.0
     container_name: grafana
     volumes:
-      - ./docker/grafana:/etc/grafana/provisioning/datasources:ro
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources:ro
       - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
