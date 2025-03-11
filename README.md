@@ -18,7 +18,7 @@ This architecture implements a modern microservices-based e-commerce system with
 * Docker & Docker Compose: Containerization and orchestration
 * Databases: Each service has its own database (SQL/NoSQL)
 
-Setup and Configuration
+## Setup and Configuration
 
 * Clone the repository
 ```bash
