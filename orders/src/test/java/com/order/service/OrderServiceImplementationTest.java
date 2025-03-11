@@ -34,7 +34,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(classes = {OrderServiceImplementation.class})
 @ExtendWith(SpringExtension.class)
 @DisabledInAotMode
-class OrderServiceImplementationDiffblueTest {
+class OrderServiceImplementationTest {
     @MockBean
     private InventoryProxy inventoryProxy;
 
@@ -61,7 +61,6 @@ class OrderServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test createOrder(OrderDto); given KafkaTemplate send(String, Object) return CompletableFuture(); then return OrderDto()")
-    @Tag("MaintainedByDiffblue")
     void testCreateOrder_givenKafkaTemplateSendReturnCompletableFuture_thenReturnOrderDto() {
         // Arrange
         when(kafkaTemplate.send(Mockito.<String>any(), Mockito.<com.common.OrderDto>any()))

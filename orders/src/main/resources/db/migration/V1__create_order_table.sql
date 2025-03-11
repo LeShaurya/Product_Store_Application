@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `Orders` (
+CREATE TABLE IF NOT EXISTS `orders` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `sku_code` VARCHAR(255) NOT NULL,
     `quantity` INT NOT NULL CHECK (quantity > 0),

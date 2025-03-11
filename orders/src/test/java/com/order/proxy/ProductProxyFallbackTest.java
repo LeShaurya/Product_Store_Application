@@ -14,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ContextConfiguration(classes = {ProductProxyFallback.class})
 @ExtendWith(SpringExtension.class)
-class ProductProxyFallbackDiffblueTest {
+class ProductProxyFallbackTest {
     @Autowired
     private ProductProxyFallback productProxyFallback;
 
@@ -25,7 +25,6 @@ class ProductProxyFallbackDiffblueTest {
      */
     @Test
     @DisplayName("Test getProductBySkuCode(String)")
-    @Tag("MaintainedByDiffblue")
     void testGetProductBySkuCode() {
         // Arrange, Act and Assert
         assertThrows(ProductNotFoundException.class, () -> productProxyFallback.getProductBySkuCode("Sku Code"));
@@ -38,7 +37,6 @@ class ProductProxyFallbackDiffblueTest {
      */
     @Test
     @DisplayName("Test productExists(String)")
-    @Tag("MaintainedByDiffblue")
     void testProductExists() {
         // Arrange, Act and Assert
         assertFalse(productProxyFallback.productExists("Sku Code"));

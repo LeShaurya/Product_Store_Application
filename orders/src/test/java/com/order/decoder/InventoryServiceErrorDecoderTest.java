@@ -5,8 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-import com.order.exceptions.BadRequestException;
-import com.order.exceptions.ProductNotFoundException;
+import com.order.exceptions.InsufficientInventoryException;
 import feign.Request;
 import feign.Request.ProtocolVersion;
 import feign.RequestTemplate;
@@ -27,24 +26,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ContextConfiguration(classes = {ProductServiceErrorDecoder.class})
+@ContextConfiguration(classes = {InventoryServiceErrorDecoder.class})
 @ExtendWith(SpringExtension.class)
-class ProductServiceErrorDecoderDiffblueTest {
+class InventoryServiceErrorDecoderTest {
     @Autowired
-    private ProductServiceErrorDecoder productServiceErrorDecoder;
+    private InventoryServiceErrorDecoder inventoryServiceErrorDecoder;
 
     /**
-     * Test {@link ProductServiceErrorDecoder#decode(String, Response)}.
+     * Test {@link InventoryServiceErrorDecoder#decode(String, Response)}.
      * <ul>
-     *   <li>Then return {@link BadRequestException}.</li>
+     *   <li>Then return LocalizedMessage is {@code Conflict while processing inventory request}.</li>
      * </ul>
      * <p>
-     * Method under test: {@link ProductServiceErrorDecoder#decode(String, Response)}
+     * Method under test: {@link InventoryServiceErrorDecoder#decode(String, Response)}
      */
     @Test
-    @DisplayName("Test decode(String, Response); then return BadRequestException")
-    @Tag("MaintainedByDiffblue")
-    void testDecode_thenReturnBadRequestException() throws UnsupportedEncodingException {
+    @DisplayName("Test decode(String, Response); then return LocalizedMessage is 'Conflict while processing inventory request'")
+    void testDecode_thenReturnLocalizedMessageIsConflictWhileProcessingInventoryRequest()
+            throws UnsupportedEncodingException {
         // Arrange
         Builder bodyResult = Response.builder().body(mock(Body.class));
         Builder reasonResult = bodyResult.headers(new HashMap<>())
@@ -54,31 +53,30 @@ class ProductServiceErrorDecoderDiffblueTest {
         byte[] body = "AXAXAXAX".getBytes("UTF-8");
         Builder requestResult = reasonResult
                 .request(Request.create("GET", "https://example.org/example", headers, body, Charset.forName("UTF-8")));
-        Response response = requestResult.requestTemplate(new RequestTemplate()).status(400).build();
+        Response response = requestResult.requestTemplate(new RequestTemplate()).status(409).build();
 
         // Act
-        Exception actualDecodeResult = productServiceErrorDecoder.decode("Method Key", response);
+        Exception actualDecodeResult = inventoryServiceErrorDecoder.decode("Method Key", response);
 
         // Assert
-        assertTrue(actualDecodeResult instanceof BadRequestException);
-        assertEquals("Bad request to product service", actualDecodeResult.getLocalizedMessage());
-        assertEquals("Bad request to product service", actualDecodeResult.getMessage());
+        assertTrue(actualDecodeResult instanceof InsufficientInventoryException);
+        assertEquals("Conflict while processing inventory request", actualDecodeResult.getLocalizedMessage());
+        assertEquals("Conflict while processing inventory request", actualDecodeResult.getMessage());
         assertNull(actualDecodeResult.getCause());
         assertEquals(0, actualDecodeResult.getSuppressed().length);
     }
 
     /**
-     * Test {@link ProductServiceErrorDecoder#decode(String, Response)}.
+     * Test {@link InventoryServiceErrorDecoder#decode(String, Response)}.
      * <ul>
-     *   <li>Then return LocalizedMessage is {@code Generic error with the product service}.</li>
+     *   <li>Then return LocalizedMessage is {@code Generic error from inventory service}.</li>
      * </ul>
      * <p>
-     * Method under test: {@link ProductServiceErrorDecoder#decode(String, Response)}
+     * Method under test: {@link InventoryServiceErrorDecoder#decode(String, Response)}
      */
     @Test
-    @DisplayName("Test decode(String, Response); then return LocalizedMessage is 'Generic error with the product service'")
-    @Tag("MaintainedByDiffblue")
-    void testDecode_thenReturnLocalizedMessageIsGenericErrorWithTheProductService() throws UnsupportedEncodingException {
+    @DisplayName("Test decode(String, Response); then return LocalizedMessage is 'Generic error from inventory service'")
+    void testDecode_thenReturnLocalizedMessageIsGenericErrorFromInventoryService() throws UnsupportedEncodingException {
         // Arrange
         Builder bodyResult = Response.builder().body(mock(Body.class));
         Builder reasonResult = bodyResult.headers(new HashMap<>())
@@ -91,27 +89,26 @@ class ProductServiceErrorDecoderDiffblueTest {
         Response response = requestResult.requestTemplate(new RequestTemplate()).status(200).build();
 
         // Act
-        Exception actualDecodeResult = productServiceErrorDecoder.decode("Method Key", response);
+        Exception actualDecodeResult = inventoryServiceErrorDecoder.decode("Method Key", response);
 
         // Assert
-        assertEquals("Generic error with the product service", actualDecodeResult.getLocalizedMessage());
-        assertEquals("Generic error with the product service", actualDecodeResult.getMessage());
+        assertEquals("Generic error from inventory service", actualDecodeResult.getLocalizedMessage());
+        assertEquals("Generic error from inventory service", actualDecodeResult.getMessage());
         assertNull(actualDecodeResult.getCause());
         assertEquals(0, actualDecodeResult.getSuppressed().length);
     }
 
     /**
-     * Test {@link ProductServiceErrorDecoder#decode(String, Response)}.
+     * Test {@link InventoryServiceErrorDecoder#decode(String, Response)}.
      * <ul>
-     *   <li>Then return {@link ProductNotFoundException}.</li>
+     *   <li>Then return LocalizedMessage is {@code Insufficient inventory available}.</li>
      * </ul>
      * <p>
-     * Method under test: {@link ProductServiceErrorDecoder#decode(String, Response)}
+     * Method under test: {@link InventoryServiceErrorDecoder#decode(String, Response)}
      */
     @Test
-    @DisplayName("Test decode(String, Response); then return ProductNotFoundException")
-    @Tag("MaintainedByDiffblue")
-    void testDecode_thenReturnProductNotFoundException() throws UnsupportedEncodingException {
+    @DisplayName("Test decode(String, Response); then return LocalizedMessage is 'Insufficient inventory available'")
+    void testDecode_thenReturnLocalizedMessageIsInsufficientInventoryAvailable() throws UnsupportedEncodingException {
         // Arrange
         Builder bodyResult = Response.builder().body(mock(Body.class));
         Builder reasonResult = bodyResult.headers(new HashMap<>())
@@ -124,12 +121,12 @@ class ProductServiceErrorDecoderDiffblueTest {
         Response response = requestResult.requestTemplate(new RequestTemplate()).status(404).build();
 
         // Act
-        Exception actualDecodeResult = productServiceErrorDecoder.decode("Method Key", response);
+        Exception actualDecodeResult = inventoryServiceErrorDecoder.decode("Method Key", response);
 
         // Assert
-        assertTrue(actualDecodeResult instanceof ProductNotFoundException);
-        assertEquals("Product not found in the product service", actualDecodeResult.getLocalizedMessage());
-        assertEquals("Product not found in the product service", actualDecodeResult.getMessage());
+        assertTrue(actualDecodeResult instanceof InsufficientInventoryException);
+        assertEquals("Insufficient inventory available", actualDecodeResult.getLocalizedMessage());
+        assertEquals("Insufficient inventory available", actualDecodeResult.getMessage());
         assertNull(actualDecodeResult.getCause());
         assertEquals(0, actualDecodeResult.getSuppressed().length);
     }

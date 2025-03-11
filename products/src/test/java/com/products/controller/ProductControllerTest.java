@@ -40,7 +40,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @ContextConfiguration(classes = {ProductController.class, AppErrorHandler.class})
 @ExtendWith(SpringExtension.class)
 @DisabledInAotMode
-class ProductControllerDiffblueTest {
+class ProductControllerTest {
     @Autowired
     private AppErrorHandler appErrorHandler;
 
@@ -57,7 +57,6 @@ class ProductControllerDiffblueTest {
      */
     @Test
     @DisplayName("Test getAllProducts()")
-    @Tag("MaintainedByDiffblue")
     void testGetAllProducts() throws Exception {
         // Arrange
         when(productService.getAllProducts()).thenReturn(new ArrayList<>());
@@ -83,7 +82,6 @@ class ProductControllerDiffblueTest {
      */
     @Test
     @DisplayName("Test getBySkuCode(String); then content string '[]'")
-    @Tag("MaintainedByDiffblue")
     void testGetBySkuCode_thenContentStringLeftSquareBracketRightSquareBracket() throws Exception {
         // Arrange
         when(productService.getAllProducts()).thenReturn(new ArrayList<>());
@@ -108,13 +106,11 @@ class ProductControllerDiffblueTest {
      */
     @Test
     @DisplayName("Test getBySkuCode(String)")
-    @Tag("MaintainedByDiffblue")
     void testGetBySkuCode() throws Exception {
         // Arrange
         when(productService.getBySkuName(Mockito.<String>any())).thenReturn(new ProductDto());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/products/{skuCode}", "Sku Code");
 
-        // Act and Assert
         MockMvcBuilders.standaloneSetup(productController)
                 .setControllerAdvice(appErrorHandler)
                 .build()
@@ -132,9 +128,7 @@ class ProductControllerDiffblueTest {
      */
     @Test
     @DisplayName("Test createProduct(ProductDto)")
-    @Tag("MaintainedByDiffblue")
     void testCreateProduct() throws Exception {
-        // Arrange
         when(productService.createProduct(Mockito.<ProductDto>any())).thenReturn(new ProductDto());
 
         ProductDto productDto = new ProductDto();
@@ -148,7 +142,6 @@ class ProductControllerDiffblueTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content);
 
-        // Act and Assert
         MockMvcBuilders.standaloneSetup(productController)
                 .setControllerAdvice(appErrorHandler)
                 .build()
@@ -166,9 +159,7 @@ class ProductControllerDiffblueTest {
      */
     @Test
     @DisplayName("Test updateProduct(String, ProductDto)")
-    @Tag("MaintainedByDiffblue")
     void testUpdateProduct() throws Exception {
-        // Arrange
         when(productService.updateProduct(Mockito.<String>any(), Mockito.<ProductDto>any())).thenReturn(new ProductDto());
 
         ProductDto productDto = new ProductDto();
@@ -182,7 +173,6 @@ class ProductControllerDiffblueTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content);
 
-        // Act and Assert
         MockMvcBuilders.standaloneSetup(productController)
                 .setControllerAdvice(appErrorHandler)
                 .build()
@@ -204,13 +194,9 @@ class ProductControllerDiffblueTest {
      */
     @Test
     @DisplayName("Test deleteProduct(String); given Product() Category is 'Category'; then calls findBySkuCode(String)")
-    @Tag("MaintainedByDiffblue")
     void testDeleteProduct_givenProductCategoryIsCategory_thenCallsFindBySkuCode() {
-        //   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-        //   Run dcover create --keep-partial-tests to gain insights into why
-        //   a non-Spring test was created.
 
-        // Arrange
+
         Product product = new Product();
         product.setCategory("Category");
         product.setId(ObjectId.get());
@@ -223,10 +209,8 @@ class ProductControllerDiffblueTest {
         doNothing().when(productRepository).delete(Mockito.<Product>any());
         when(productRepository.findBySkuCode(Mockito.<String>any())).thenReturn(ofResult);
 
-        // Act
         (new ProductController(new ProductServiceImplementation(productRepository))).deleteProduct("Sku Code");
 
-        // Assert
         verify(productRepository).findBySkuCode(eq("Sku Code"));
         verify(productRepository).delete(isA(Product.class));
     }
@@ -241,14 +225,11 @@ class ProductControllerDiffblueTest {
      */
     @Test
     @DisplayName("Test productExists(String); then content string FALSE toString")
-    @Tag("MaintainedByDiffblue")
     void testProductExists_thenContentStringFalseToString() throws Exception {
-        // Arrange
         when(productService.productExists(Mockito.<String>any())).thenReturn(false);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/products/{skuCode}/exists",
                 "Sku Code");
 
-        // Act and Assert
         ResultActions resultActions = MockMvcBuilders.standaloneSetup(productController)
                 .setControllerAdvice(appErrorHandler)
                 .build()
@@ -269,14 +250,11 @@ class ProductControllerDiffblueTest {
      */
     @Test
     @DisplayName("Test productExists(String); then content string TRUE toString")
-    @Tag("MaintainedByDiffblue")
     void testProductExists_thenContentStringTrueToString() throws Exception {
-        // Arrange
         when(productService.productExists(Mockito.<String>any())).thenReturn(true);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/products/{skuCode}/exists",
                 "Sku Code");
 
-        // Act and Assert
         ResultActions resultActions = MockMvcBuilders.standaloneSetup(productController)
                 .setControllerAdvice(appErrorHandler)
                 .build()

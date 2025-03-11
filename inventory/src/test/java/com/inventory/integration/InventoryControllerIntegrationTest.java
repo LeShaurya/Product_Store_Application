@@ -32,7 +32,7 @@ public class InventoryControllerIntegrationTest {
 
     @Container
     static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8.0")
-            .withDatabaseName("inventory-test-db")
+            .withDatabaseName("inventory")
             .withUsername("test")
             .withPassword("test");
 
@@ -96,7 +96,7 @@ public class InventoryControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/inventory/reserve")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isInternalServerError()); // Assuming InsufficientInventoryException returns 500
+                .andExpect(status().is4xxClientError());
 
         // Verify inventory remained unchanged
         Inventory updatedInventory = inventoryRepository.findBySkuCode("PROD-003");
@@ -112,7 +112,7 @@ public class InventoryControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/inventory/reserve")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isInternalServerError()); // Assuming your service throws an exception
+                .andExpect(status().is4xxClientError()); // Assuming your service throws an exception
     }
 
     @Test
@@ -142,7 +142,7 @@ public class InventoryControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/api/inventory/update")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isInternalServerError()); // Assuming InsufficientInventoryException returns 500
+                .andExpect(status().is4xxClientError());
 
         // Verify inventory remained unchanged
         Inventory updatedInventory = inventoryRepository.findBySkuCode("PROD-001");

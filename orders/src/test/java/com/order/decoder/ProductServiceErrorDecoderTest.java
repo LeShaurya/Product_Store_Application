@@ -1,11 +1,10 @@
 package com.order.decoder;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-import com.order.exceptions.InsufficientInventoryException;
+import com.order.exceptions.BadRequestException;
+import com.order.exceptions.ProductNotFoundException;
 import feign.Request;
 import feign.Request.ProtocolVersion;
 import feign.RequestTemplate;
@@ -26,25 +25,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ContextConfiguration(classes = {InventoryServiceErrorDecoder.class})
+@ContextConfiguration(classes = {ProductServiceErrorDecoder.class})
 @ExtendWith(SpringExtension.class)
-class InventoryServiceErrorDecoderDiffblueTest {
+class ProductServiceErrorDecoderTest {
     @Autowired
-    private InventoryServiceErrorDecoder inventoryServiceErrorDecoder;
+    private ProductServiceErrorDecoder productServiceErrorDecoder;
 
     /**
-     * Test {@link InventoryServiceErrorDecoder#decode(String, Response)}.
+     * Test {@link ProductServiceErrorDecoder#decode(String, Response)}.
      * <ul>
-     *   <li>Then return LocalizedMessage is {@code Conflict while processing inventory request}.</li>
+     *   <li>Then return {@link BadRequestException}.</li>
      * </ul>
      * <p>
-     * Method under test: {@link InventoryServiceErrorDecoder#decode(String, Response)}
+     * Method under test: {@link ProductServiceErrorDecoder#decode(String, Response)}
      */
     @Test
-    @DisplayName("Test decode(String, Response); then return LocalizedMessage is 'Conflict while processing inventory request'")
-    @Tag("MaintainedByDiffblue")
-    void testDecode_thenReturnLocalizedMessageIsConflictWhileProcessingInventoryRequest()
-            throws UnsupportedEncodingException {
+    @DisplayName("Test decode(String, Response); then return BadRequestException")
+    void testDecode_thenReturnBadRequestException() throws UnsupportedEncodingException {
         // Arrange
         Builder bodyResult = Response.builder().body(mock(Body.class));
         Builder reasonResult = bodyResult.headers(new HashMap<>())
@@ -54,31 +51,30 @@ class InventoryServiceErrorDecoderDiffblueTest {
         byte[] body = "AXAXAXAX".getBytes("UTF-8");
         Builder requestResult = reasonResult
                 .request(Request.create("GET", "https://example.org/example", headers, body, Charset.forName("UTF-8")));
-        Response response = requestResult.requestTemplate(new RequestTemplate()).status(409).build();
+        Response response = requestResult.requestTemplate(new RequestTemplate()).status(400).build();
 
         // Act
-        Exception actualDecodeResult = inventoryServiceErrorDecoder.decode("Method Key", response);
+        Exception actualDecodeResult = productServiceErrorDecoder.decode("Method Key", response);
 
         // Assert
-        assertTrue(actualDecodeResult instanceof InsufficientInventoryException);
-        assertEquals("Conflict while processing inventory request", actualDecodeResult.getLocalizedMessage());
-        assertEquals("Conflict while processing inventory request", actualDecodeResult.getMessage());
+        assertTrue(actualDecodeResult instanceof BadRequestException);
+        assertEquals("Bad request to product service", actualDecodeResult.getLocalizedMessage());
+        assertEquals("Bad request to product service", actualDecodeResult.getMessage());
         assertNull(actualDecodeResult.getCause());
         assertEquals(0, actualDecodeResult.getSuppressed().length);
     }
 
     /**
-     * Test {@link InventoryServiceErrorDecoder#decode(String, Response)}.
+     * Test {@link ProductServiceErrorDecoder#decode(String, Response)}.
      * <ul>
-     *   <li>Then return LocalizedMessage is {@code Generic error from inventory service}.</li>
+     *   <li>Then return LocalizedMessage is {@code Generic error with the product service}.</li>
      * </ul>
      * <p>
-     * Method under test: {@link InventoryServiceErrorDecoder#decode(String, Response)}
+     * Method under test: {@link ProductServiceErrorDecoder#decode(String, Response)}
      */
     @Test
-    @DisplayName("Test decode(String, Response); then return LocalizedMessage is 'Generic error from inventory service'")
-    @Tag("MaintainedByDiffblue")
-    void testDecode_thenReturnLocalizedMessageIsGenericErrorFromInventoryService() throws UnsupportedEncodingException {
+    @DisplayName("Test decode(String, Response); then return LocalizedMessage is 'Generic error with the product service'")
+    void testDecode_thenReturnLocalizedMessageIsGenericErrorWithTheProductService() throws UnsupportedEncodingException {
         // Arrange
         Builder bodyResult = Response.builder().body(mock(Body.class));
         Builder reasonResult = bodyResult.headers(new HashMap<>())
@@ -91,27 +87,26 @@ class InventoryServiceErrorDecoderDiffblueTest {
         Response response = requestResult.requestTemplate(new RequestTemplate()).status(200).build();
 
         // Act
-        Exception actualDecodeResult = inventoryServiceErrorDecoder.decode("Method Key", response);
+        Exception actualDecodeResult = productServiceErrorDecoder.decode("Method Key", response);
 
         // Assert
-        assertEquals("Generic error from inventory service", actualDecodeResult.getLocalizedMessage());
-        assertEquals("Generic error from inventory service", actualDecodeResult.getMessage());
+        assertEquals("Generic error with the product service", actualDecodeResult.getLocalizedMessage());
+        assertEquals("Generic error with the product service", actualDecodeResult.getMessage());
         assertNull(actualDecodeResult.getCause());
         assertEquals(0, actualDecodeResult.getSuppressed().length);
     }
 
     /**
-     * Test {@link InventoryServiceErrorDecoder#decode(String, Response)}.
+     * Test {@link ProductServiceErrorDecoder#decode(String, Response)}.
      * <ul>
-     *   <li>Then return LocalizedMessage is {@code Insufficient inventory available}.</li>
+     *   <li>Then return {@link ProductNotFoundException}.</li>
      * </ul>
      * <p>
-     * Method under test: {@link InventoryServiceErrorDecoder#decode(String, Response)}
+     * Method under test: {@link ProductServiceErrorDecoder#decode(String, Response)}
      */
     @Test
-    @DisplayName("Test decode(String, Response); then return LocalizedMessage is 'Insufficient inventory available'")
-    @Tag("MaintainedByDiffblue")
-    void testDecode_thenReturnLocalizedMessageIsInsufficientInventoryAvailable() throws UnsupportedEncodingException {
+    @DisplayName("Test decode(String, Response); then return ProductNotFoundException")
+    void testDecode_thenReturnProductNotFoundException() throws UnsupportedEncodingException {
         // Arrange
         Builder bodyResult = Response.builder().body(mock(Body.class));
         Builder reasonResult = bodyResult.headers(new HashMap<>())
@@ -124,12 +119,12 @@ class InventoryServiceErrorDecoderDiffblueTest {
         Response response = requestResult.requestTemplate(new RequestTemplate()).status(404).build();
 
         // Act
-        Exception actualDecodeResult = inventoryServiceErrorDecoder.decode("Method Key", response);
+        Exception actualDecodeResult = productServiceErrorDecoder.decode("Method Key", response);
 
         // Assert
-        assertTrue(actualDecodeResult instanceof InsufficientInventoryException);
-        assertEquals("Insufficient inventory available", actualDecodeResult.getLocalizedMessage());
-        assertEquals("Insufficient inventory available", actualDecodeResult.getMessage());
+        assertInstanceOf(ProductNotFoundException.class, actualDecodeResult);
+        assertEquals("Product not found in the product service", actualDecodeResult.getLocalizedMessage());
+        assertEquals("Product not found in the product service", actualDecodeResult.getMessage());
         assertNull(actualDecodeResult.getCause());
         assertEquals(0, actualDecodeResult.getSuppressed().length);
     }

@@ -14,7 +14,6 @@ import com.inventory.exceptions.InsufficientInventoryException;
 import com.inventory.model.Inventory;
 import com.inventory.repository.InventoryRepository;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -27,7 +26,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(classes = {InventoryServiceImplementation.class})
 @ExtendWith(SpringExtension.class)
 @DisabledInAotMode
-class InventoryServiceImplementationDiffblueTest {
+class InventoryServiceImplementationTest {
     @MockBean
     private InventoryRepository inventoryRepository;
 
@@ -41,7 +40,6 @@ class InventoryServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test reserve(InventoryUpdateDto)")
-    @Tag("MaintainedByDiffblue")
     @MethodsUnderTest({"boolean InventoryServiceImplementation.reserve(InventoryUpdateDto)"})
     void testReserve() {
         // Arrange
@@ -60,7 +58,6 @@ class InventoryServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test updateProductInventory(InventoryUpdateDto)")
-    @Tag("MaintainedByDiffblue")
     @MethodsUnderTest({"boolean InventoryServiceImplementation.updateProductInventory(InventoryUpdateDto)"})
     void testUpdateProductInventory() {
         // Arrange
@@ -85,7 +82,6 @@ class InventoryServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test updateProductInventory(InventoryUpdateDto)")
-    @Tag("MaintainedByDiffblue")
     @MethodsUnderTest({"boolean InventoryServiceImplementation.updateProductInventory(InventoryUpdateDto)"})
     void testUpdateProductInventory2() {
         // Arrange
@@ -111,7 +107,6 @@ class InventoryServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test updateProductInventory(InventoryUpdateDto); given InventoryRepository")
-    @Tag("MaintainedByDiffblue")
     @MethodsUnderTest({"boolean InventoryServiceImplementation.updateProductInventory(InventoryUpdateDto)"})
     void testUpdateProductInventory_givenInventoryRepository() {
         // Arrange
@@ -133,7 +128,6 @@ class InventoryServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test updateProductInventory(InventoryUpdateDto); then return 'true'")
-    @Tag("MaintainedByDiffblue")
     @MethodsUnderTest({"boolean InventoryServiceImplementation.updateProductInventory(InventoryUpdateDto)"})
     void testUpdateProductInventory_thenReturnTrue() {
         // Arrange
@@ -147,11 +141,9 @@ class InventoryServiceImplementationDiffblueTest {
         when(inventoryRepository.save(Mockito.<Inventory>any())).thenReturn(inventory2);
         when(inventoryRepository.findBySkuCode(Mockito.<String>any())).thenReturn(inventory);
 
-        // Act
         boolean actualUpdateProductInventoryResult = inventoryServiceImplementation
                 .updateProductInventory(new InventoryUpdateDto("Sku Code", 1));
 
-        // Assert
         verify(inventoryRepository).findBySkuCode(eq("Sku Code"));
         verify(inventoryRepository).save(isA(Inventory.class));
         assertTrue(actualUpdateProductInventoryResult);

@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @ContextConfiguration(classes = {InventoryController.class, AppErrorHandler.class})
 @ExtendWith(SpringExtension.class)
 @DisabledInAotMode
-class InventoryControllerDiffblueTest {
+class InventoryControllerTest {
     @Autowired
     private AppErrorHandler appErrorHandler;
 
@@ -41,7 +41,6 @@ class InventoryControllerDiffblueTest {
      */
     @Test
     @DisplayName("Test reserveInventory(InventoryUpdateDto)")
-    @Tag("MaintainedByDiffblue")
     void testReserveInventory() throws Exception {
         // Arrange
         when(inventoryService.reserve(Mockito.<InventoryUpdateDto>any())).thenReturn(true);
@@ -71,7 +70,6 @@ class InventoryControllerDiffblueTest {
      */
     @Test
     @DisplayName("Test updateInventory(InventoryUpdateDto)")
-    @Tag("MaintainedByDiffblue")
     void testUpdateInventory() throws Exception {
         // Arrange
         when(inventoryService.updateProductInventory(Mockito.<InventoryUpdateDto>any())).thenReturn(true);

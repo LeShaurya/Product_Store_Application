@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @ContextConfiguration(classes = {OrderController.class, GlobalExceptionHandler.class})
 @ExtendWith(SpringExtension.class)
 @DisabledInAotMode
-class OrderControllerDiffblueTest {
+class OrderControllerTest {
     @Autowired
     private GlobalExceptionHandler globalExceptionHandler;
 
@@ -41,7 +41,6 @@ class OrderControllerDiffblueTest {
      */
     @Test
     @DisplayName("Test createOrder(OrderDto)")
-    @Tag("MaintainedByDiffblue")
     void testCreateOrder() throws Exception {
         // Arrange
         when(orderServiceImplementation.createOrder(Mockito.<OrderDto>any())).thenReturn(new OrderDto());
@@ -59,7 +58,6 @@ class OrderControllerDiffblueTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content);
 
-        // Act and Assert
         MockMvcBuilders.standaloneSetup(orderController)
                 .setControllerAdvice(globalExceptionHandler)
                 .build()

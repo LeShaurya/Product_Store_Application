@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Inventory")
+@Table(name = "inventory")
 public class Inventory {
     @Id
     @NotBlank(message = "product sku-code should not be blank.")

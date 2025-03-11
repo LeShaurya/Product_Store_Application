@@ -38,7 +38,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(classes = {ProductServiceImplementation.class})
 @ExtendWith(SpringExtension.class)
 @DisabledInAotMode
-class ProductServiceImplementationDiffblueTest {
+class ProductServiceImplementationTest {
     @MockBean
     private ProductRepository productRepository;
 
@@ -56,7 +56,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test getAllProducts(); given Product() Category is 'Category'; then return size is one")
-    @Tag("MaintainedByDiffblue")
     void testGetAllProducts_givenProductCategoryIsCategory_thenReturnSizeIsOne() {
         // Arrange
         Product product = new Product();
@@ -95,7 +94,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test getAllProducts(); given ProductRepository findAll() return ArrayList(); then return Empty")
-    @Tag("MaintainedByDiffblue")
     void testGetAllProducts_givenProductRepositoryFindAllReturnArrayList_thenReturnEmpty() {
         // Arrange
         when(productRepository.findAll()).thenReturn(new ArrayList<>());
@@ -118,7 +116,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test getAllProducts(); then return size is two")
-    @Tag("MaintainedByDiffblue")
     void testGetAllProducts_thenReturnSizeIsTwo() {
         // Arrange
         Product product = new Product();
@@ -172,7 +169,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test getAllProducts(); then throw ProductNotFoundException")
-    @Tag("MaintainedByDiffblue")
     void testGetAllProducts_thenThrowProductNotFoundException() {
         // Arrange
         when(productRepository.findAll()).thenThrow(new ProductNotFoundException("An error occurred"));
@@ -189,7 +185,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test getBySkuName(String)")
-    @Tag("MaintainedByDiffblue")
     void testGetBySkuName() {
         // Arrange
         when(productRepository.findBySkuCode(Mockito.<String>any()))
@@ -211,7 +206,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test getBySkuName(String); given Product() Category is 'Category'; then return 'Category'")
-    @Tag("MaintainedByDiffblue")
     void testGetBySkuName_givenProductCategoryIsCategory_thenReturnCategory() {
         // Arrange
         Product product = new Product();
@@ -247,7 +241,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test getBySkuName(String); given ProductRepository findBySkuCode(String) return empty")
-    @Tag("MaintainedByDiffblue")
     void testGetBySkuName_givenProductRepositoryFindBySkuCodeReturnEmpty() {
         // Arrange
         Optional<Product> emptyResult = Optional.empty();
@@ -269,7 +262,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test createProduct(ProductDto); when ProductDto(); then return 'Category'")
-    @Tag("MaintainedByDiffblue")
     void testCreateProduct_whenProductDto_thenReturnCategory() {
         // Arrange
         Product product = new Product();
@@ -301,7 +293,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test updateProduct(String, ProductDto)")
-    @Tag("MaintainedByDiffblue")
     void testUpdateProduct() {
         // Arrange
         Product product = new Product();
@@ -332,7 +323,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test updateProduct(String, ProductDto); given ProductRepository findBySkuCode(String) return empty")
-    @Tag("MaintainedByDiffblue")
     void testUpdateProduct_givenProductRepositoryFindBySkuCodeReturnEmpty() {
         // Arrange
         Optional<Product> emptyResult = Optional.empty();
@@ -355,7 +345,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test updateProduct(String, ProductDto); given ProductRepository save(Object) return Product(); then return 'Category'")
-    @Tag("MaintainedByDiffblue")
     void testUpdateProduct_givenProductRepositorySaveReturnProduct_thenReturnCategory() {
         // Arrange
         Product product = new Product();
@@ -398,7 +387,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test deleteProduct(String)")
-    @Tag("MaintainedByDiffblue")
     void testDeleteProduct() {
         // Arrange
         Product product = new Product();
@@ -429,7 +417,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test deleteProduct(String); given ProductRepository delete(Object) does nothing; then calls delete(Object)")
-    @Tag("MaintainedByDiffblue")
     void testDeleteProduct_givenProductRepositoryDeleteDoesNothing_thenCallsDelete() {
         // Arrange
         Product product = new Product();
@@ -461,7 +448,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test deleteProduct(String); given ProductRepository findBySkuCode(String) return empty")
-    @Tag("MaintainedByDiffblue")
     void testDeleteProduct_givenProductRepositoryFindBySkuCodeReturnEmpty() {
         // Arrange
         Optional<Product> emptyResult = Optional.empty();
@@ -483,7 +469,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test productExists(String); given Product() Category is 'Category'; then return 'true'")
-    @Tag("MaintainedByDiffblue")
     void testProductExists_givenProductCategoryIsCategory_thenReturnTrue() {
         // Arrange
         Product product = new Product();
@@ -515,7 +500,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test productExists(String); given ProductRepository findBySkuCode(String) return empty; then return 'false'")
-    @Tag("MaintainedByDiffblue")
     void testProductExists_givenProductRepositoryFindBySkuCodeReturnEmpty_thenReturnFalse() {
         // Arrange
         Optional<Product> emptyResult = Optional.empty();
@@ -539,7 +523,6 @@ class ProductServiceImplementationDiffblueTest {
      */
     @Test
     @DisplayName("Test productExists(String); then throw ProductNotFoundException")
-    @Tag("MaintainedByDiffblue")
     void testProductExists_thenThrowProductNotFoundException() {
         // Arrange
         when(productRepository.findBySkuCode(Mockito.<String>any()))
