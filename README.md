@@ -35,16 +35,17 @@ cd Product_Store_Application
 
 ## API Endpoints
 
-### Product Service (http://products:8090)
+### Product Service 
+- Running on http://products:8090
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/products` | Get all products |
-| POST | `/api/products` | Create a new product |
-| GET | `/api/products/{skuCode}` | Get product by SKU code |
-| PUT | `/api/products/{skuCode}` | Update product by SKU code |
-| DELETE | `/api/products/{skuCode}` | Delete product by SKU code |
-| GET | `/api/products/{skuCode}/exists` | Check if product exists |
+| Method | Endpoint                         | Description                |
+|--------|----------------------------------|----------------------------|
+| GET    | `/api/products`                  | Get all products           |
+| POST   | `/api/products`                  | Create a new product       |
+| GET    | `/api/products/{skuCode}`        | Get product by SKU code    |
+| PUT    | `/api/products/{skuCode}`        | Update product by SKU code |
+| DELETE | `/api/products/{skuCode}`        | Delete product by SKU code |
+| GET    | `/api/products/{skuCode}/exists` | Check if product exists    |
 
 #### Product DTO Structure
 ```json
@@ -57,11 +58,12 @@ cd Product_Store_Application
 }
 ```
 
-### Order Service (http://orders:8091)
+### Order Service 
+- Running on http://orders:8091
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/orders` | Create a new order |
+| Method | Endpoint      | Description        |
+|--------|---------------|--------------------|
+| POST   | `/api/orders` | Create a new order |
 
 #### Order DTO Structure
 ```json
@@ -76,12 +78,13 @@ cd Product_Store_Application
 }
 ```
 
-### Inventory Service (http://inventory:8092)
+### Inventory Service 
+- Running on http://inventory:8092
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| PUT | `/api/inventory/update` | Update inventory quantity |
-| POST | `/api/inventory/reserve` | Reserve inventory for order |
+| Method | Endpoint                 | Description                 |
+|--------|--------------------------|-----------------------------|
+| PUT    | `/api/inventory/update`  | Update inventory quantity   |
+| POST   | `/api/inventory/reserve` | Reserve inventory for order |
 
 #### Inventory Update DTO Structure
 ```json
@@ -90,6 +93,9 @@ cd Product_Store_Application
   "quantity": 0
 }
 ```
+
+### Aggregated API documentation using Swagger UI:
+- http://localhost:8093/swagger-ui/index.html
 
 ## Microservice Architecture
 ![Basic Architecture](images/basic_arch.jpg)
