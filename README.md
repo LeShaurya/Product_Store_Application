@@ -32,6 +32,65 @@ cd Product_Store_Application
 * creation of client (client-credential grant type)
 * using the client-id and client-secret generate a token to be authorized to use the resource-server.
 
+
+## API Endpoints
+
+### Product Service (http://products:8090)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/products` | Get all products |
+| POST | `/api/products` | Create a new product |
+| GET | `/api/products/{skuCode}` | Get product by SKU code |
+| PUT | `/api/products/{skuCode}` | Update product by SKU code |
+| DELETE | `/api/products/{skuCode}` | Delete product by SKU code |
+| GET | `/api/products/{skuCode}/exists` | Check if product exists |
+
+#### Product DTO Structure
+```json
+{
+  "skuCode": "string",
+  "productName": "string",
+  "category": "string",
+  "price": 0.0,
+  "vendor": "string"
+}
+```
+
+### Order Service (http://orders:8091)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/orders` | Create a new order |
+
+#### Order DTO Structure
+```json
+{
+  "skuCode": "string",
+  "productName": "string",
+  "quantity": 0,
+  "customerName": "string",
+  "customerEmail": "string",
+  "customerPhone": "string",
+  "shippingAddress": "string"
+}
+```
+
+### Inventory Service (http://inventory:8092)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| PUT | `/api/inventory/update` | Update inventory quantity |
+| POST | `/api/inventory/reserve` | Reserve inventory for order |
+
+#### Inventory Update DTO Structure
+```json
+{
+  "skuCode": "string",
+  "quantity": 0
+}
+```
+
 ## Microservice Architecture
 ![Basic Architecture](images/basic_arch.jpg)
 
