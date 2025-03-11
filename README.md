@@ -28,7 +28,7 @@ cd Product_Store_Application
 * Set-up environment variables in docker-compose.yaml
 
 ### Running with Keycloak
-* Ensure creation of `myrealm`
+* Ensure creation of `myrealm` realm.
 * creation of client (client-credential grant type)
 * using the client-id and client-secret generate a token to be authorized to use the resource-server.
 
