@@ -27,21 +27,21 @@ public class Route {
     @Bean
     public RouterFunction<ServerResponse> productServiceRoute() {
         return GatewayRouterFunctions.route("product_service")
-                .route(RequestPredicates.path("/api/products"), HandlerFunctions.http(productServiceUrl))
+                .route(RequestPredicates.path("/api/products/**"), HandlerFunctions.http(productServiceUrl))
                 .build();
     }
 
     @Bean
     public RouterFunction<ServerResponse> orderServiceRoute() {
         return GatewayRouterFunctions.route("order_service")
-                .route(RequestPredicates.path("/api/orders"), HandlerFunctions.http(orderServiceUrl))
+                .route(RequestPredicates.path("/api/orders/**"), HandlerFunctions.http(orderServiceUrl))
                 .build();
     }
 
     @Bean
     public RouterFunction<ServerResponse> inventoryServiceRoute() {
         return GatewayRouterFunctions.route("inventory_service")
-                .route(RequestPredicates.path("/api/inventory"), HandlerFunctions.http(inventoryServiceUrl))
+                .route(RequestPredicates.path("/api/inventory/**"), HandlerFunctions.http(inventoryServiceUrl))
                 .build();
     }
 

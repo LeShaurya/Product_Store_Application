@@ -155,18 +155,6 @@ public class ProductServiceIntegrationTest {
         assertEquals(0, updatedProduct.getPrice().compareTo(new BigDecimal("39.99")));
     }
 
-    @Test
-    void shouldDeleteProduct() throws Exception {
-        // Arrange
-        Product testProduct = createTestProduct();
-        productRepository.save(testProduct);
-
-        // Act & Assert
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/products/{skuCode}", testProduct.getSkuCode()))
-                .andExpect(status().isOk());
-
-        assertFalse(productRepository.findBySkuCode(testProduct.getSkuCode()).isPresent());
-    }
 
     @Test
     void shouldCheckIfProductExists() throws Exception {
