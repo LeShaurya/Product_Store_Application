@@ -69,7 +69,6 @@ cd Product_Store_Application
 ```json
 {
   "skuCode": "string",
-  "productName": "string",
   "quantity": 0,
   "customerName": "string",
   "customerEmail": "string",
